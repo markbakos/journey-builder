@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 
+import { FormDetails } from './components/FormDetails'
 import { FormList } from './components/FormList'
 import { useGraph } from './hooks/useGraph'
 
@@ -59,6 +60,7 @@ function App() {
                             selectedNodeId={selectedNodeId}
                             onSelect={setSelectedNodeId}
                         />
+                        <FormDetails graph={graph} nodeId={selectedNodeId} />
                     </div>
                 ) : null}
             </div>
