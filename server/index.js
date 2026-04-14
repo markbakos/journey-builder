@@ -4,7 +4,7 @@ const path = require('path');
 
 // Create a server
 const server = http.createServer((req, res) => {
-    if (req.url.match(/\/api\/v1\/[^/]+\/actions\/blueprints\/[^/]+\/graph/)  && req.method === 'GET') {
+    if (req.url.match(/\/api\/v1\/[^/]+\/actions\/blueprints\/[^/]+(?:\/[^/]+)?\/graph$/)  && req.method === 'GET') {
         const filePath = path.join(__dirname, 'graph.json');
 
         // Read the graph.json file
