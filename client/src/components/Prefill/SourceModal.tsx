@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { createPortal } from 'react-dom'
 
-import { getFieldCompatibility } from '../lib/prefill'
-import type { FieldDefinition, PrefillSourceOption } from '../types/graph'
-import type { PrefillSourceSection } from '../types/prefill'
+import { getFieldCompatibility } from '../../lib/prefill.ts'
+import type { FieldDefinition, PrefillSourceOption } from '../../types/graph.ts'
+import type { PrefillSourceSection } from '../../types/prefill.ts'
 
 interface PrefillSourceModalProps {
     isOpen: boolean
@@ -24,7 +24,7 @@ function groupOptionsByGroup(options: PrefillSourceOption[]): Array<[string, Pre
     return Array.from(groups.entries())
 }
 
-export function PrefillSourceModal({
+export function SourceModal({
                                        isOpen,
                                        targetField,
                                        sections,

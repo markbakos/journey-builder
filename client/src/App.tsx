@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 
-import { FormDetails } from './components/FormDetails'
-import { FormList } from './components/FormList'
-import { PrefillSourceModal } from './components/PrefillSourceModal'
+import { Details } from './components/Form/Details.tsx'
+import { List } from './components/Form/List.tsx'
+import { SourceModal } from './components/Prefill/SourceModal.tsx'
 import { useGraph } from './hooks/useGraph'
 import { usePrefillMappings } from './hooks/usePrefillMappings'
 import { getFieldsForNode } from './lib/graph'
@@ -134,13 +134,13 @@ function App() {
                 {!isLoading && !error && graph ? (
                     <>
                         <div className="grid gap-6 lg:grid-cols-[360px_minmax(0,1fr)]">
-                            <FormList
+                            <List
                                 graph={graph}
                                 selectedNodeId={selectedNodeId}
                                 onSelect={setSelectedNodeId}
                             />
 
-                            <FormDetails
+                            <Details
                                 graph={graph}
                                 nodeId={selectedNodeId}
                                 mappings={selectedNodeMappings}
@@ -149,7 +149,7 @@ function App() {
                             />
                         </div>
 
-                        <PrefillSourceModal
+                        <SourceModal
                             isOpen={Boolean(modalTarget && activeTargetField)}
                             targetField={activeTargetField}
                             sections={activeSourceSections}

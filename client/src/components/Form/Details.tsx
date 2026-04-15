@@ -3,9 +3,10 @@ import {
     getFieldsForNode,
     getTransitiveDependencies,
     resolveFormForNode,
-} from '../lib/graph'
-import { formatSourceTypeLabel } from '../lib/prefill'
-import type { NormalizedGraph, PrefillMapping } from '../types/graph'
+} from '../../lib/graph.ts'
+import { formatSourceTypeLabel } from '../../lib/prefill.ts'
+import type { NormalizedGraph, PrefillMapping } from '../../types/graph.ts'
+import { Badge } from '../UI/Badge.tsx'
 
 interface FormDetailsProps {
     graph: NormalizedGraph
@@ -15,15 +16,8 @@ interface FormDetailsProps {
     onClearMapping: (fieldKey: string) => void
 }
 
-function TypeBadge({ value }: { value: string }) {
-    return (
-        <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700">
-      {value}
-    </span>
-    )
-}
 
-export function FormDetails({
+export function Details({
                                 graph,
                                 nodeId,
                                 mappings = {},
@@ -67,7 +61,7 @@ export function FormDetails({
                     <div className="mt-3 flex flex-wrap gap-2">
                         {directDependencies.length > 0 ? (
                             directDependencies.map((dependency) => (
-                                <TypeBadge key={dependency.id} value={dependency.name} />
+                                <Badge key={dependency.id} value={dependency.name} />
                             ))
                         ) : (
                             <span className="text-sm text-slate-500">None</span>
@@ -80,7 +74,7 @@ export function FormDetails({
                     <div className="mt-3 flex flex-wrap gap-2">
                         {transitiveDependencies.length > 0 ? (
                             transitiveDependencies.map((dependency) => (
-                                <TypeBadge key={dependency.id} value={dependency.name} />
+                                <Badge key={dependency.id} value={dependency.name} />
                             ))
                         ) : (
                             <span className="text-sm text-slate-500">None</span>
@@ -120,9 +114,9 @@ export function FormDetails({
                                         </div>
 
                                         <div className="mt-2 flex flex-wrap gap-2">
-                                            <TypeBadge value={field.type} />
-                                            {field.format ? <TypeBadge value={field.format} /> : null}
-                                            {mapping ? <TypeBadge value={formatSourceTypeLabel(mapping.sourceType)} /> : null}
+                                            <Badge value={field.type} />
+                                            {field.format ? <Badge value={field.format} /> : null}
+                                            {mapping ? <Badge value={formatSourceTypeLabel(mapping.sourceType)} /> : null}
                                         </div>
                                     </div>
 
