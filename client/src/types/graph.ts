@@ -96,6 +96,8 @@ export interface PrefillSourceOption {
     sourceType: PrefillSourceType
     group: string
     valueType: JsonSchemaType | 'unknown'
+    valueFormat?: string
+    sourcePath: string
     nodeId?: string
     nodeName?: string
     fieldKey?: string

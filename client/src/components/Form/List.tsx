@@ -1,5 +1,5 @@
-import { getDirectDependencyIds } from '../lib/graph'
-import type { NormalizedGraph } from '../types/graph'
+import { getDirectDependencyIds } from '../../lib/graph.ts'
+import type { NormalizedGraph } from '../../types/graph.ts'
 
 interface FormListProps {
     graph: NormalizedGraph
@@ -7,7 +7,7 @@ interface FormListProps {
     onSelect: (nodeId: string) => void
 }
 
-export function FormList({ graph, selectedNodeId, onSelect }: FormListProps) {
+export function List({ graph, selectedNodeId, onSelect }: FormListProps) {
     return (
         <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
             <div className="space-y-3">

@@ -1,8 +1,16 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
-import { FormDetails } from './components/FormDetails'
-import { FormList } from './components/FormList'
+import { Details } from './components/Form/Details.tsx'
+import { List } from './components/Form/List.tsx'
+import { SourceModal } from './components/Prefill/SourceModal.tsx'
 import { useGraph } from './hooks/useGraph'
+import { usePrefillMappings } from './hooks/usePrefillMappings'
+import { getFieldsForNode } from './lib/graph'
+import {
+    DEFAULT_PREFILL_SOURCE_PROVIDERS,
+    getPrefillSourceSections,
+} from './lib/prefill'
+import type { PrefillModalTarget } from './types/prefill'
 
 function App() {
     const graphParams =  {
@@ -12,7 +20,9 @@ function App() {
         }
 
     const { graph, isLoading, error, refetch } = useGraph(graphParams)
+    const { mappingsByNodeId, setMapping, clearMapping } = usePrefillMappings()
     const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
+    const [modalTarget, setModalTarget] = useState<PrefillModalTarget | null>(null)
 
     useEffect(() => {
         if (!graph) {
@@ -25,9 +35,77 @@ function App() {
         }
 
         if (selectedNodeId && !graph.nodesById[selectedNodeId]) {
-            setSelectedNodeId(graph.formNodes[0]?.id || null)
+            setSelectedNodeId(graph.formNodes[0]?.id ?? null)
         }
     }, [graph, selectedNodeId])
+
+    useEffect(() => {
+        if (!graph || !modalTarget) {
+            return
+        }
+
+        if (!graph.nodesById[modalTarget.nodeId]) {
+            setModalTarget(null)
+        }
+    }, [graph, modalTarget])
+
+    const activeTargetField = useMemo(() => {
+        if (!graph || !modalTarget) {
+            return null
+        }
+
+        return (
+            getFieldsForNode(graph, modalTarget.nodeId).find(
+                (field) => field.key === modalTarget.fieldKey && field.isPrefillTarget,
+            ) || null
+        )
+    }, [graph, modalTarget])
+
+    const activeSourceSections = useMemo(() => {
+        if (!graph || !modalTarget) {
+            return []
+        }
+
+        return getPrefillSourceSections({
+            graph,
+            targetNodeId: modalTarget.nodeId,
+            providers: DEFAULT_PREFILL_SOURCE_PROVIDERS,
+        })
+    }, [graph, modalTarget])
+
+    const selectedNodeMappings = selectedNodeId ? mappingsByNodeId[selectedNodeId] ?? {} : {}
+
+    function HandleOpenMapping(fieldKey: string) {
+        if (!selectedNodeId) {
+            return
+        }
+
+        setModalTarget({
+            nodeId: selectedNodeId,
+            fieldKey,
+        })
+    }
+
+    function HandleCloseModal() {
+        setModalTarget(null)
+    }
+
+    function HandleSelectSource(sourceId: Parameters<typeof setMapping>[2]) {
+        if (!modalTarget) {
+            return
+        }
+
+        setMapping(modalTarget.nodeId, modalTarget.fieldKey, sourceId)
+        setModalTarget(null)
+    }
+
+    function HandleClearMapping(fieldKey: string) {
+        if (!selectedNodeId) {
+            return
+        }
+
+        clearMapping(selectedNodeId, fieldKey)
+    }
 
     return (
         <main className="min-h-screen px-4 py-8 text-slate-900">
@@ -54,14 +132,31 @@ function App() {
                 ) : null}
 
                 {!isLoading && !error && graph ? (
-                    <div className="grid gap-6 lg:grid-cols-[360px_minmax(0,1fr)]">
-                        <FormList
-                            graph={graph}
-                            selectedNodeId={selectedNodeId}
-                            onSelect={setSelectedNodeId}
+                    <>
+                        <div className="grid gap-6 lg:grid-cols-[360px_minmax(0,1fr)]">
+                            <List
+                                graph={graph}
+                                selectedNodeId={selectedNodeId}
+                                onSelect={setSelectedNodeId}
+                            />
+
+                            <Details
+                                graph={graph}
+                                nodeId={selectedNodeId}
+                                mappings={selectedNodeMappings}
+                                onOpenMapping={HandleOpenMapping}
+                                onClearMapping={HandleClearMapping}
+                            />
+                        </div>
+
+                        <SourceModal
+                            isOpen={Boolean(modalTarget && activeTargetField)}
+                            targetField={activeTargetField}
+                            sections={activeSourceSections}
+                            onSelect={HandleSelectSource}
+                            onClose={HandleCloseModal}
                         />
-                        <FormDetails graph={graph} nodeId={selectedNodeId} />
-                    </div>
+                    </>
                 ) : null}
             </div>
         </main>
